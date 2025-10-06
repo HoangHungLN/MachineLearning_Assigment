@@ -46,16 +46,17 @@ def features_extractor_classic(train, val, test, mode = "BoW", **kwargs):
     if mode == "BoW":
         Xtr, Xva, Xte, vec = BoW_extractor(train, val, test, **kwargs)
         outdir = "features/bow"
+        report_vectorizer(vec, Xtr, Xva, Xte, title="Bag-of-Words Report")
     elif mode == "TFIDF":
         Xtr, Xva, Xte, vec = TFIDF_extractor(train, val, test, **kwargs)
         outdir = "features/tfidf"
+        report_vectorizer(vec, Xtr, Xva, Xte, title="TF-IDF Report")
     else:
         raise ValueError ("mode phải là BoW hoặc TFIDF")
     os.makedirs(outdir, exist_ok=True)
     sparse.save_npz(f"{outdir}/Xtr.npz", Xtr)
     sparse.save_npz(f"{outdir}/Xva.npz", Xva)
     sparse.save_npz(f"{outdir}/Xte.npz", Xte)
-    return vec
 
 def _sparse_stats(X):
     n_rows, n_cols = X.shape
