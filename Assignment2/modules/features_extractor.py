@@ -44,25 +44,27 @@ def TFIDF_extractor(train, val, test, max_features = 5000, ngram_range = (1,2), 
 
 def features_extractor_classic(train, val, test, mode = "BoW", **kwargs):
     if mode == "BoW":
-        return BoW_extractor(train, val, test, **kwargs)
+        Xtr, Xva, Xte, vec = BoW_extractor(train, val, test, **kwargs)
+        outdir = "features/bow"
     elif mode == "TFIDF":
-        return TFIDF_extractor(train, val, test, **kwargs)
+        Xtr, Xva, Xte, vec = TFIDF_extractor(train, val, test, **kwargs)
+        outdir = "features/tfidf"
     else:
         raise ValueError ("mode phải là BoW hoặc TFIDF")
+    os.makedirs(outdir, exist_ok=True)
+    sparse.save_npz(f"{outdir}/Xtr.npz", Xtr)
+    sparse.save_npz(f"{outdir}/Xva.npz", Xva)
+    sparse.save_npz(f"{outdir}/Xte.npz", Xte)
 
 def _sparse_stats(X):
-    """Trả về shape, nnz, density, và ước lượng dung lượng (MB)."""
     n_rows, n_cols = X.shape
     nnz = X.nnz
     density = nnz / (n_rows * n_cols) if n_rows*n_cols else 0.0
-    # ước lượng bộ nhớ cho CSR
-    size_bytes = X.data.nbytes + X.indices.nbytes + X.indptr.nbytes
-    size_mb = size_bytes / (1024**2)
+
     return {
         "shape": (n_rows, n_cols),
         "nnz": int(nnz),
         "density": float(density),
-        "mem_MB_est": round(size_mb, 3),
     }
 
 def _vectorizer_params(vec):
@@ -100,8 +102,3 @@ def report_vectorizer(vec, Xtr, Xva, Xte, title=None):
         s = _sparse_stats(M)
         print(f"  [{name}] shape={s['shape']}  nnz={s['nnz']:,}  density={s['density']:.6f}")
 
-def save_sparse_features(Xtr, Xva, Xte, vec, outdir):
-    os.makedirs(outdir, exist_ok=True)
-    sparse.save_npz(f"{outdir}/Xtr.npz", Xtr)
-    sparse.save_npz(f"{outdir}/Xva.npz", Xva)
-    sparse.save_npz(f"{outdir}/Xte.npz", Xte)
