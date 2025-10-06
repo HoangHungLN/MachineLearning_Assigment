@@ -55,6 +55,7 @@ def features_extractor_classic(train, val, test, mode = "BoW", **kwargs):
     sparse.save_npz(f"{outdir}/Xtr.npz", Xtr)
     sparse.save_npz(f"{outdir}/Xva.npz", Xva)
     sparse.save_npz(f"{outdir}/Xte.npz", Xte)
+    return vec
 
 def _sparse_stats(X):
     n_rows, n_cols = X.shape
