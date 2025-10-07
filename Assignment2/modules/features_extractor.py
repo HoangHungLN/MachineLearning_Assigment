@@ -46,17 +46,18 @@ def features_extractor_classic(train, val, test, mode = "BoW", **kwargs):
     if mode == "BoW":
         Xtr, Xva, Xte, vec = BoW_extractor(train, val, test, **kwargs)
         outdir = "features/bow"
-        report_vectorizer(vec, Xtr, Xva, Xte, title="Bag-of-Words Report")
+        res = report_vectorizer(vec, Xtr, Xva, Xte, title="Bag-of-Words Report")
     elif mode == "TFIDF":
         Xtr, Xva, Xte, vec = TFIDF_extractor(train, val, test, **kwargs)
         outdir = "features/tfidf"
-        report_vectorizer(vec, Xtr, Xva, Xte, title="TF-IDF Report")
+        res = report_vectorizer(vec, Xtr, Xva, Xte, title="TF-IDF Report")
     else:
         raise ValueError ("mode phải là BoW hoặc TFIDF")
     os.makedirs(outdir, exist_ok=True)
     sparse.save_npz(f"{outdir}/Xtr.npz", Xtr)
     sparse.save_npz(f"{outdir}/Xva.npz", Xva)
     sparse.save_npz(f"{outdir}/Xte.npz", Xte)
+    return res
 
 def _sparse_stats(X):
     n_rows, n_cols = X.shape
@@ -87,20 +88,38 @@ def _vectorizer_params(vec):
     params["vocab_size"] = int(vocab_size)
     return params
 
-def report_vectorizer(vec, Xtr, Xva, Xte, title=None):
+# def report_vectorizer(vec, Xtr, Xva, Xte, title=None):
 
+#     if title:
+#         print("="*len(title))
+#         print(title)
+#         print("="*len(title))
+
+#     params = _vectorizer_params(vec)
+#     print(">>> Vectorizer params:")
+#     for k1, v1 in params.items():
+#         print(f"  - {k1}: {v1}")
+
+#     print("\n>>> Matrix stats:")
+#     for name, M in [("Train", Xtr), ("Val", Xva), ("Test", Xte)]:
+#         s = _sparse_stats(M)
+#         print(f"  [{name}] shape={s['shape']}  nnz={s['nnz']:,}  density={s['density']:.6f}")
+
+def report_vectorizer(vec, Xtr, Xva, Xte, title=None):
+    lines = []
     if title:
-        print("="*len(title))
-        print(title)
-        print("="*len(title))
+        bar = "=" * len(title)
+        lines += [bar, title, bar, ""]
 
     params = _vectorizer_params(vec)
-    print(">>> Vectorizer params:")
-    for k1, v1 in params.items():
-        print(f"  - {k1}: {v1}")
+    lines.append(">>> Vectorizer params:")
+    for k, v in params.items():
+        lines.append(f"  - {k}: {v}")
+    lines.append("")  # dòng trống
 
-    print("\n>>> Matrix stats:")
+    lines.append(">>> Matrix stats:")
     for name, M in [("Train", Xtr), ("Val", Xva), ("Test", Xte)]:
         s = _sparse_stats(M)
-        print(f"  [{name}] shape={s['shape']}  nnz={s['nnz']:,}  density={s['density']:.6f}")
+        lines.append(f"  [{name}] shape={s['shape']}  nnz={s['nnz']:,}  density={s['density']:.6f}")
 
+    return "\n".join(lines)
