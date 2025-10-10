@@ -36,10 +36,6 @@
 3. **So sánh và đánh giá mô hình**  
    - So sánh hiệu quả giữa các mô hình đã huấn luyện.  
    - Đưa ra báo cáo kết quả: phân tích dữ liệu (EDA), mô tả pipeline, cấu hình các bước xử lý, và đánh giá.  
-
-4. **Mở rộng (Extension)**  
-   - Thử nghiệm hoặc tối ưu thêm (mô hình nâng cao, kỹ thuật ensemble, tuning hyperparameters, …).  
-
 ---
 
 ### Dataset
@@ -68,13 +64,77 @@ Dataset đã được push lên GitHub, đã được cấu hình sẵn trong no
   - Tiền xử lý dữ liệu (imputation, scaling, encoding).  
   - Giảm chiều dữ liệu bằng PCA.  
   - Huấn luyện mô hình (Logistic Regression, SVM, Random Forest).  
-  - Trả về metrics (Accuracy, Precision, Recall, F1, Explained Variance %).  
+  - Trả về metrics (Accuracy, Precision, Recall, F1, Explained Variance %).
+
+-----
+## Assignment 2 
+### Mục tiêu bài tập
+1. **Xử lý dữ liệu đầu vào**  
+   - Làm sạch văn bản: loại bỏ ký tự đặc biệt, chuẩn hóa chữ thường.
+   - Thực hiện tokenization, loại bỏ stopwords, và padding độ dài chuỗi (nếu cần).
+   - Xây dựng lớp TextPreprocessor linh hoạt, cho phép bật/tắt từng bước tiền xử lý thông qua tham số.
+2. **Xây dựng pipeline học máy cho dữ liệu dạng bảng (Tabular Data)**  
+   - Trích xuất đặc trưng bằng các phương pháp: Bag-of-Words (BoW), TF–IDF (Term Frequency–Inverse Document Frequency), TF–IDF Weighted GloVe Embedding
+   - Thiết kế pipeline cho phép cấu hình mô hình và đặc trưng linh hoạt (BoW, TF–IDF, GloVe).
+   - Huấn luyện các mô hình học máy: Naive Bayes, Logistic Regression, SVM (LinearSVC).
+3. **So sánh và đánh giá mô hình**  
+   - Thử nghiệm và tinh chỉnh tham số (Hyperparameter Tuning):
+   - Đánh giá mô hình trên tập validation và test bằng các chỉ số: Accuracy, Precision, Recall, F1-score.
+   - So sánh hiệu quả giữa các phương pháp trích xuất đặc trưng (BoW, TF–IDF, GloVe) và mô hình.
+   - Phân tích so sánh giữa cách tiếp cận truyền thống (BoW, TF–IDF) và hiện đại (TF–IDF Weighted GloVe).
+---
+
+### Dataset
+- **Tên:** *"IT Service Ticket Classification Dataset"*  
+- **Nguồn:** [Kaggle Link](https://www.kaggle.com/datasets/adisongoh/it-service-ticket-classification-dataset)  
+- **Mô tả:** 47,837  mẫu, 8 chủ đề phân loại.  
+- **Mục tiêu:** Phân loại chủ đề của các đoạn yêu cầu dịch vụ. 
+
+**Cách tải dataset trong Colab:**  
+Dataset đã được push lên GitHub, đã được cấu hình sẵn trong notebook để đảm bảo sẽ tự động tải sau khi nhấn Run Time -> Run all
+### Mô tả các module
+
+- **`features_extractor.py`**:  
+  Chứa các hàm *tiền xử lý* và *trích xuất đặc trưng cơ bản* cho dữ liệu văn bản.  
+  - Làm sạch dữ liệu: loại bỏ ký tự đặc biệt, chuyển về chữ thường, tách từ, v.v.  
+  - Tạo và lưu các đặc trưng văn bản bằng các phương pháp phổ biến như:
+    - **Bag of Words (BoW)**
+    - **TF-IDF (Term Frequency – Inverse Document Frequency)**
+    - **TF-IDF + GloVe** (kết hợp biểu diễn thống kê và ngữ nghĩa).  
+  - Các hàm tiêu biểu:
+    - `build_bow_features()` – sinh đặc trưng BoW.  
+    - `build_tfidf_features()` – sinh đặc trưng TF-IDF.  
+    - `clean_text()` – tiền xử lý văn bản đầu vào.  
 
 ---
-## Assignment 2 (comming soon)
 
+- **`tfidf_glove.py`**:  
+  Cài đặt quy trình kết hợp **TF-IDF weighting** với **GloVe embeddings** để biểu diễn văn bản ở dạng vector dense.  
+  - `load_glove_model()` – tải và chuyển đổi file GloVe sang định dạng Word2Vec.  
+  - `build_tfidf()` – huấn luyện TF-IDF để sinh bản đồ IDF cho từng từ.  
+  - `sent_vec_tfidf()` – tính vector câu dựa trên trung bình có trọng số TF-IDF của các từ.  
+  - `docs_to_matrix()` – chuyển toàn bộ tập văn bản thành ma trận đặc trưng.  
+  - `run_tfidf_glove()` – pipeline chính:
+    - Tokenize văn bản.  
+    - Load mô hình GloVe.  
+    - Áp dụng TF-IDF weighting.  
+    - Sinh và lưu các ma trận đặc trưng `Xtr_w2v.npy`, `Xva_w2v.npy`, `Xte_w2v.npy`.  
+
+---
+
+- **`models.py`**:  
+  Định nghĩa các hàm huấn luyện và đánh giá mô hình học máy cổ điển: **Naive Bayes**, **Logistic Regression**, và **SVM**.  
+  - `run_models(Xtr, ytr, Xva, yva, Xte, yte, model_params)`  
+    - Huấn luyện các mô hình dựa trên đặc trưng đầu vào.  
+    - Thử nghiệm các bộ **hyperparameters** khác nhau.  
+    - Trả về độ chính xác (*validation accuracy*) của từng mô hình.  
+  - `evaluate_model_on_test(model, Xte, yte, model_name)`  
+    - Đánh giá mô hình tốt nhất trên tập test.  
+    - In ra **classification report** gồm *precision*, *recall*, *f1-score* cho từng lớp.  
+ 
+-----
 ## Assignment 3 (comming soon)
-
+-----
 ## Phần mở rộng (comming soon)
 ---
 
@@ -99,11 +159,25 @@ MachineLearning_Assignment/
 │   └── notebooks/
 │       └── Assignment1_CEML2.ipynb
 │
-├── Assignment2/
-│   ├── data/
-│   ├── modules/
-│   └── notebooks/
+Assignment2/
+├── data/
+│   └── all_tickets_processed_improved_v3.csv
 │
+├── features/
+│   └── tfidf_glove/
+│       ├── Xte_w2v.npy
+│       ├── Xtr_w2v.npy
+│       └── Xva_w2v.npy
+│
+├── modules/
+│   ├── features_extractor.py
+│   ├── models.py
+│   └── tfidf_glove.py
+│
+├── notebooks/
+│   └── Assignment2_CEML2.ipynb
+│
+|
 ├── Assignment3/
 │   ├── data/
 │   ├── modules/
@@ -116,6 +190,7 @@ MachineLearning_Assignment/
 ## Notebook
  
 - [Link notebook Assignment 1](https://colab.research.google.com/drive/1saG65yL3ieFIaZLorNRLfMgdfchSFudX?usp=sharing)
+- [Link notebook Assignment 2](https://colab.research.google.com/github/HoangHungLN/MachineLearning_Assigment/blob/main/Assignment2/notebooks/Assignment2_CEML2.ipynb)
 
 ---
 
@@ -127,20 +202,3 @@ Nếu có thắc mắc, vui lòng liên hệ:
 
 ## Acknowledgement
 Đây là bản sao bài tập lớn môn **CO3117 – Học Máy** (Lớp TN01, Nhóm CEML2, Học kỳ 251, Năm học 2025–2026).  
-Mình (Trương Thiên Ân) xin gửi lời cảm ơn đến 
-### Giảng viên hướng dẫn
-- **TS. Lê Thành Sách** 
-### các thành viên nhóm:  
-- Lại Nguyễn Hoàng Hưng 
-- Nguyễn Tô Quốc Việt
-
-## My Contribution
-
-Trong bài tập lớn này, mình phụ trách chính các phần:
-- **Code EDA (Exploratory Data Analysis)**: trực quan hóa, phân tích dữ liệu.  
-- **Code model**: xây dựng và huấn luyện các mô hình học máy (Logistic Regression, SVM, Random Forest).  
-- **Phân tích biến & preprocessing**: đánh giá các đặc trưng, xử lý missing values, encoding, chuẩn hóa dữ liệu, chuẩn bị đầu vào cho pipeline.  
-
-Repo này mình clone về GitHub cá nhân để ghi nhận sự tham gia và lưu giữ kết quả học tập. 
-
-
