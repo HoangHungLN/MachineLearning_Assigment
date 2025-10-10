@@ -106,8 +106,6 @@ Dataset đã được push lên GitHub, đã được cấu hình sẵn trong no
     - `build_tfidf_features()` – sinh đặc trưng TF-IDF.  
     - `clean_text()` – tiền xử lý văn bản đầu vào.  
 
----
-
 - **`tfidf_glove.py`**:  
   Cài đặt quy trình kết hợp **TF-IDF weighting** với **GloVe embeddings** để biểu diễn văn bản ở dạng vector dense.  
   - `load_glove_model()` – tải và chuyển đổi file GloVe sang định dạng Word2Vec.  
@@ -119,8 +117,6 @@ Dataset đã được push lên GitHub, đã được cấu hình sẵn trong no
     - Load mô hình GloVe.  
     - Áp dụng TF-IDF weighting.  
     - Sinh và lưu các ma trận đặc trưng `Xtr_w2v.npy`, `Xva_w2v.npy`, `Xte_w2v.npy`.  
-
----
 
 - **`models.py`**:  
   Định nghĩa các hàm huấn luyện và đánh giá mô hình học máy cổ điển: **Naive Bayes**, **Logistic Regression**, và **SVM**.  
