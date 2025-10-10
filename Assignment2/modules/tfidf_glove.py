@@ -7,9 +7,11 @@ from gensim.models import KeyedVectors
 
 
 
+#--------Hàm tách thành các token--------
 def to_tokens(texts):
     return [t.split() for t in texts]
 
+#--------Hàm tải mô hình embended glove từ trên web và load w2v format--------
 def load_glove_model():
     glove_zip = "glove.2024.wikigiga.300d.zip"
     glove_dir = "glove.2024.300d"
@@ -22,6 +24,7 @@ def load_glove_model():
     wv = KeyedVectors.load_word2vec_format(w2v_output, binary=False)
     return wv
 
+#------Xây dựng IDF_map-----------
 def build_tfidf(train_texts):
     tfidf = TfidfVectorizer(
         ngram_range=(1, 1),
@@ -36,6 +39,7 @@ def build_tfidf(train_texts):
     idf_default = np.median(list(idf_map.values()))
     return idf_map, idf_default
 
+#----Tạo vector tài liệu bằng trung bình trọng số (Tf x IDF)---------
 def sent_vec_tfidf(tokens, keyedvecs, idf_map, idf_default):
     dim = keyedvecs.vector_size
     cnt = Counter(tokens)
@@ -49,10 +53,12 @@ def sent_vec_tfidf(tokens, keyedvecs, idf_map, idf_default):
             wtot += wt
     return (wsum / wtot) if wtot > 0 else np.zeros(dim, dtype="float32")
 
-
+#-------Chuyển đổi tập tài liệu thành ma trận Numpy-------
 def docs_to_matrix(token_lists, keyedvecs, idf_map, idf_default):
     return np.vstack([sent_vec_tfidf(toks, keyedvecs, idf_map, idf_default) for toks in token_lists])
 
+
+#--------Pipepline chính để chạy trích xuất đặc trưng bằng phương pháp Tf-idf kết hợp glove----
 def run_tfidf_glove(tr_clean, va_clean, te_clean, output_dir="features/tfidf_glove"):
 
     Xtr_tok = to_tokens(tr_clean)
