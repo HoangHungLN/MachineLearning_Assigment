@@ -1,10 +1,10 @@
 from typing import Dict, Any, Tuple
 import numpy as np
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC, SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from scipy import sparse
 
@@ -36,16 +36,16 @@ def run_models(
     """
     results = {}
 
-    # 1) Naive Bayes (chỉ hợp dữ liệu không âm)
-    if 'NaiveBayes' in model_params:
-        nb_params = model_params['NaiveBayes']
-        nb = MultinomialNB(**nb_params)
-        nb.fit(Xtr, ytr)
-        yva_pred = nb.predict(Xva)
+    # 1) RandomForest
+    if 'RandomForest' in model_params:
+        rf_params = model_params['RandomForest']
+        rf = RandomForestClassifier(**rf_params, n_jobs= -1, random_state= 42)
+        rf.fit(Xtr, ytr)
+        yva_pred = rf.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
         if print_reports:
-            print(f"[NaiveBayes] VAL acc = {val_acc}")
-        results['NaiveBayes'] = {'model': nb, 'val_acc': val_acc}
+            print(f"[RandomForest] VAL acc = {val_acc}")
+        results['RandomForest'] = {'model': rf, 'val_acc': val_acc}
 
     # 2) Logistic Regression (nên scale)
     if 'LogisticRegression' in model_params:
