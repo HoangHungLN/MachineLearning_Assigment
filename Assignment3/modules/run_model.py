@@ -2,23 +2,17 @@ from typing import Dict, Any, Tuple
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC, SVC
+from sklearn.decomposition import PCA
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from scipy import sparse
 
-def _is_sparse(x):
-    return sparse.issparse(x)
-
-def _scaler_for(x):
-    # with_mean=False để không phá hỏng dữ liệu sparse
-    return StandardScaler(with_mean=not _is_sparse(x))
-
 def run_models(
     Xtr, ytr, Xva, yva, Xte, yte,
     model_params,
-    print_reports: bool = True
+    print_reports: bool = True,
 ):
     """
     Train & chọn model tốt nhất theo VAL accuracy, rồi đánh giá trên TEST.
@@ -37,6 +31,7 @@ def run_models(
     results = {}
 
     # 1) RandomForest
+
     if 'RandomForest' in model_params:
         rf_params = model_params['RandomForest']
         rf = RandomForestClassifier(**rf_params, n_jobs= -1, random_state= 42)
@@ -50,7 +45,7 @@ def run_models(
     # 2) Logistic Regression (nên scale)
     if 'LogisticRegression' in model_params:
         lr_params = model_params['LogisticRegression']
-        lr = make_pipeline(_scaler_for(Xtr), LogisticRegression(**lr_params))
+        lr = make_pipeline(StandardScaler(),PCA(n_components=0.95, whiten=True, random_state=42), LogisticRegression(**lr_params))
         lr.fit(Xtr, ytr)
         yva_pred = lr.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
@@ -61,7 +56,8 @@ def run_models(
     # 3) LinearSVC (nhanh, mạnh; không có predict_proba)
     if 'LinearSVC' in model_params:
         lsvm_params = model_params['LinearSVC']
-        lsvm = make_pipeline(_scaler_for(Xtr), LinearSVC(**lsvm_params))
+        lsvm = make_pipeline(StandardScaler(),PCA(n_components=0.95, whiten=True, random_state=42),
+                              LinearSVC(**lsvm_params))
         lsvm.fit(Xtr, ytr)
         yva_pred = lsvm.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
@@ -71,8 +67,12 @@ def run_models(
 
     # 4) SVC (có xác suất nếu probability=True; chậm hơn LinearSVC)
     if 'SVC' in model_params:
+        pca = PCA(n_components=0.95, whiten=True, random_state=42)
+        Xtrain = pca.fit_transform(Xtr)
+        Xval = pca.transform(Xva)
         svc_params = model_params['SVC']
-        svc = make_pipeline(_scaler_for(Xtr), SVC(**svc_params))
+        svc = make_pipeline(StandardScaler(),PCA(n_components=0.95, whiten=True, random_state=42),
+                             SVC(**svc_params))
         svc.fit(Xtr, ytr)
         yva_pred = svc.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
@@ -88,8 +88,9 @@ def run_models(
 def evaluate_model_on_test(model, Xte, yte, model_name):
     """Evaluates a trained model on the test set and prints the report."""
     print(f"\n--- Đánh giá mô hình {model_name} tốt nhất trên tập Test ---")
-    yte_pred = model.predict(Xte)
+    yte_pred =model.predict(Xte)
     test_accuracy = accuracy_score(yte, yte_pred)
+
     print(f"Test Accuracy: {test_accuracy}")
     print(classification_report(yte, yte_pred, zero_division=0))
     return test_accuracy
