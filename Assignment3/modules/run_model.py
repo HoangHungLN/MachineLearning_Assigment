@@ -17,7 +17,7 @@ def _scaler_for(x):
 
 def run_models(
     Xtr, ytr, Xva, yva, Xte, yte,
-    model_params: Dict[str, Dict[str, Any]],
+    model_params,
     print_reports: bool = True
 ):
     """
