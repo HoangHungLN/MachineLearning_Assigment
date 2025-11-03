@@ -44,7 +44,7 @@ def run_models(
         yva_pred = nb.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
         if print_reports:
-            print(f"[NaiveBayes] VAL acc = {val_acc:.4f}")
+            print(f"[NaiveBayes] VAL acc = {val_acc}")
         results['NaiveBayes'] = {'model': nb, 'val_acc': val_acc}
 
     # 2) Logistic Regression (nên scale)
@@ -55,7 +55,7 @@ def run_models(
         yva_pred = lr.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
         if print_reports:
-            print(f"[LogisticRegression] VAL acc = {val_acc:.4f}")
+            print(f"[LogisticRegression] VAL acc = {val_acc}")
         results['LogisticRegression'] = {'model': lr, 'val_acc': val_acc}
 
     # 3) LinearSVC (nhanh, mạnh; không có predict_proba)
@@ -66,7 +66,7 @@ def run_models(
         yva_pred = lsvm.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
         if print_reports:
-            print(f"[LinearSVC] VAL acc = {val_acc:.4f}")
+            print(f"[LinearSVC] VAL acc = {val_acc}")
         results['LinearSVC'] = {'model': lsvm, 'val_acc': val_acc}
 
     # 4) SVC (có xác suất nếu probability=True; chậm hơn LinearSVC)
@@ -76,25 +76,12 @@ def run_models(
         svc.fit(Xtr, ytr)
         yva_pred = svc.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
-        yte_pred = svc.predict(Xte)
-        test_acc = accuracy_score(yte, yte_pred)
         if print_reports:
-            print(f"[SVC] VAL acc = {val_acc:.4f} | TEST acc = {test_acc:.4f}")
-        results['SVC'] = {'model': svc, 'val_acc': val_acc, 'test_acc': test_acc}
+            print(f"[SVC] VAL acc = {val_acc}")
+        results['SVC'] = {'model': svc, 'val_acc': val_acc}
 
     if not results:
         raise ValueError("Không có mô hình nào để chạy. Hãy truyền model_params hợp lệ.")
-
-    # # Chọn best theo VAL accuracy
-    # best_name = max(results, key=lambda k: results[k]['val_acc'])
-    # best_model = results[best_name]['model']
-
-    # # In báo cáo TEST chi tiết
-    # if print_reports:
-    #     print(f"\n=== Best model (VAL): {best_name} | VAL acc = {results[best_name]['val_acc']:.4f} ===")
-    #     yte_pred = best_model.predict(Xte)
-    #     print(f"[{best_name}] TEST accuracy = {accuracy_score(yte, yte_pred):.4f}")
-    #     print(classification_report(yte, yte_pred, zero_division=0))
 
     return results
 
