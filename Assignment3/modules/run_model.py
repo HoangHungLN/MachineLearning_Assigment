@@ -18,9 +18,8 @@ def _scaler_for(x):
 def run_models(
     Xtr, ytr, Xva, yva, Xte, yte,
     model_params: Dict[str, Dict[str, Any]],
-    select_metric: str = "accuracy",
     print_reports: bool = True
-) -> Tuple[str, Any, Dict[str, Any]]:
+):
     """
     Train & chọn model tốt nhất theo VAL accuracy, rồi đánh giá trên TEST.
 
@@ -40,17 +39,13 @@ def run_models(
     # 1) Naive Bayes (chỉ hợp dữ liệu không âm)
     if 'NaiveBayes' in model_params:
         nb_params = model_params['NaiveBayes']
-        if (not _is_sparse(Xtr)) and (np.min(Xtr) < 0):
-            if print_reports:
-                print("[WARN] MultinomialNB cần đặc trưng không âm. Bỏ qua mô hình này.")
-        else:
-            nb = MultinomialNB(**nb_params)
-            nb.fit(Xtr, ytr)
-            yva_pred = nb.predict(Xva)
-            val_acc = accuracy_score(yva, yva_pred)
-            if print_reports:
-                print(f"[NaiveBayes] VAL acc = {val_acc:.4f}")
-            results['NaiveBayes'] = {'model': nb, 'val_acc': val_acc}
+        nb = MultinomialNB(**nb_params)
+        nb.fit(Xtr, ytr)
+        yva_pred = nb.predict(Xva)
+        val_acc = accuracy_score(yva, yva_pred)
+        if print_reports:
+            print(f"[NaiveBayes] VAL acc = {val_acc:.4f}")
+        results['NaiveBayes'] = {'model': nb, 'val_acc': val_acc}
 
     # 2) Logistic Regression (nên scale)
     if 'LogisticRegression' in model_params:
@@ -90,15 +85,24 @@ def run_models(
     if not results:
         raise ValueError("Không có mô hình nào để chạy. Hãy truyền model_params hợp lệ.")
 
-    # Chọn best theo VAL accuracy
-    best_name = max(results, key=lambda k: results[k]['val_acc'])
-    best_model = results[best_name]['model']
+    # # Chọn best theo VAL accuracy
+    # best_name = max(results, key=lambda k: results[k]['val_acc'])
+    # best_model = results[best_name]['model']
 
-    # In báo cáo TEST chi tiết
-    if print_reports:
-        print(f"\n=== Best model (VAL): {best_name} | VAL acc = {results[best_name]['val_acc']:.4f} ===")
-        yte_pred = best_model.predict(Xte)
-        print(f"[{best_name}] TEST accuracy = {accuracy_score(yte, yte_pred):.4f}")
-        print(classification_report(yte, yte_pred, zero_division=0))
+    # # In báo cáo TEST chi tiết
+    # if print_reports:
+    #     print(f"\n=== Best model (VAL): {best_name} | VAL acc = {results[best_name]['val_acc']:.4f} ===")
+    #     yte_pred = best_model.predict(Xte)
+    #     print(f"[{best_name}] TEST accuracy = {accuracy_score(yte, yte_pred):.4f}")
+    #     print(classification_report(yte, yte_pred, zero_division=0))
 
-    return best_name, best_model, results
+    return results
+
+def evaluate_model_on_test(model, Xte, yte, model_name):
+    """Evaluates a trained model on the test set and prints the report."""
+    print(f"\n--- Đánh giá mô hình {model_name} tốt nhất trên tập Test ---")
+    yte_pred = model.predict(Xte)
+    test_accuracy = accuracy_score(yte, yte_pred)
+    print(f"Test Accuracy: {test_accuracy}")
+    print(classification_report(yte, yte_pred, zero_division=0))
+    return test_accuracy
