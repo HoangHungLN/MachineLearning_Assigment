@@ -95,3 +95,5 @@ def run_extraction(model_name, data_pipeline, output_dir):
         print(f"Đã lưu file X_{split_name}.npy và y_{split_name}.npy")
 
     print(f"--- HOÀN THÀNH: {model_name.upper()} ---")
+
+    
