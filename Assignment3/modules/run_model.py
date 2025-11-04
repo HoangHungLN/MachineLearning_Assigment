@@ -1,6 +1,7 @@
 from typing import Dict, Any, Tuple
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import Normalizer
 from sklearn.svm import LinearSVC, SVC
 from sklearn.decomposition import PCA
 from sklearn.pipeline import make_pipeline
@@ -13,6 +14,8 @@ def run_models(
     Xtr, ytr, Xva, yva, Xte, yte,
     model_params,
     print_reports: bool = True,
+    pca: bool = False,
+    normalize: bool = False
 ):
     """
     Train & chọn model tốt nhất theo VAL accuracy, rồi đánh giá trên TEST.
@@ -45,7 +48,20 @@ def run_models(
     # 2) Logistic Regression (nên scale)
     if 'LogisticRegression' in model_params:
         lr_params = model_params['LogisticRegression']
-        lr = make_pipeline(StandardScaler(),PCA(n_components=0.95, whiten=True, random_state=42), LogisticRegression(**lr_params))
+        if normalize and pca:
+            lr = make_pipeline(StandardScaler(),Normalizer(norm="l2"), 
+                                                PCA(n_components=0.95, 
+                                                    whiten=True,random_state=42),
+                                                LogisticRegression(**lr_params))
+        elif normalize and ( not pca):
+            lr = make_pipeline(Normalizer(norm="l2"), LogisticRegression(**lr_params))
+        elif (not normalize) and pca:
+
+            lr = make_pipeline(StandardScaler(),PCA(n_components=0.95, 
+                                                    whiten=True,random_state=42),
+                                                   LogisticRegression(**lr_params))
+        else:
+            lr = make_pipeline(StandardScaler(), LogisticRegression(**lr_params))
         lr.fit(Xtr, ytr)
         yva_pred = lr.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
@@ -56,8 +72,21 @@ def run_models(
     # 3) LinearSVC (nhanh, mạnh; không có predict_proba)
     if 'LinearSVC' in model_params:
         lsvm_params = model_params['LinearSVC']
-        lsvm = make_pipeline(StandardScaler(),PCA(n_components=0.95, whiten=True, random_state=42),
-                              LinearSVC(**lsvm_params))
+        if normalize and pca:
+            lsvm = make_pipeline(StandardScaler(),Normalizer(norm="l2"), 
+                                                PCA(n_components=0.95, 
+                                                    whiten=True,random_state=42),
+                                                LinearSVC(**lsvm_params))
+        elif normalize and ( not pca):
+            lsvm = make_pipeline(Normalizer(norm="l2"), LinearSVC(**lsvm_params))
+        elif (not normalize) and pca:
+
+            lsvm = make_pipeline(StandardScaler(),PCA(n_components=0.95, 
+                                                    whiten=True,random_state=42),
+                                                   LinearSVC(**lsvm_params))
+        else:
+            lsvm = make_pipeline(StandardScaler(), LinearSVC(**lsvm_params))
+
         lsvm.fit(Xtr, ytr)
         yva_pred = lsvm.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
@@ -67,12 +96,21 @@ def run_models(
 
     # 4) SVC (có xác suất nếu probability=True; chậm hơn LinearSVC)
     if 'SVC' in model_params:
-        pca = PCA(n_components=0.95, whiten=True, random_state=42)
-        Xtrain = pca.fit_transform(Xtr)
-        Xval = pca.transform(Xva)
         svc_params = model_params['SVC']
-        svc = make_pipeline(StandardScaler(),PCA(n_components=0.95, whiten=True, random_state=42),
-                             SVC(**svc_params))
+        if normalize and pca:
+            svc = make_pipeline(StandardScaler(),Normalizer(norm="l2"), 
+                                                PCA(n_components=0.95, 
+                                                    whiten=True,random_state=42),
+                                                SVC(**svc_params))
+        elif normalize and ( not pca):
+            svc = make_pipeline(Normalizer(norm="l2"), SVC(**svc_params))
+        elif (not normalize) and pca:
+
+            svc = make_pipeline(StandardScaler(),PCA(n_components=0.95, 
+                                                    whiten=True,random_state=42),
+                                                   SVC(**svc_params))
+        else:
+            svc = make_pipeline(StandardScaler(), SVC(**svc_params))
         svc.fit(Xtr, ytr)
         yva_pred = svc.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
