@@ -37,7 +37,13 @@ def run_models(
 
     if 'RandomForest' in model_params:
         rf_params = model_params['RandomForest']
-        rf = RandomForestClassifier(**rf_params, n_jobs= -1, random_state= 42)
+        if normalize:
+            rf = make_pipeline(Normalizer(norm= "l2"),
+                                      RandomForestClassifier(**rf_params,
+                                                              n_jobs= -1, random_state= 42))
+        else:
+            rf = RandomForestClassifier(**rf_params, n_jobs= -1, random_state= 42)
+            
         rf.fit(Xtr, ytr)
         yva_pred = rf.predict(Xva)
         val_acc = accuracy_score(yva, yva_pred)
