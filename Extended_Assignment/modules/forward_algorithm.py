@@ -26,20 +26,12 @@ def forward_algorithm(O, pi, A, B):
     alpha = np.zeros((T, N))
 
     # 1. Khởi tạo alpha[0, i]
-    try:
         alpha[0, :] = pi * B[:, O[0]]
-    except IndexError:
-        print(f"Lỗi: Chỉ số quan sát O[0]={O[0]} vượt ngoài giới hạn của ma trận B (shape {B.shape})")
-        return 0.0
 
     # 2. Đệ quy (t=1 đến T-1)
     for t in range(1, T):
-        try:
             alpha[t, :] = (alpha[t-1, :] @ A) * B[:, O[t]]
-        except IndexError:
-            print(f"Lỗi: Chỉ số quan sát O[{t}]={O[t]} vượt ngoài giới hạn của ma trận B (shape {B.shape})")
-            return 0.0
-
+        
     # 3. P(O|lambda) = Tổng các alpha[T-1, i]
     total_prob = np.sum(alpha[T-1, :])
 
