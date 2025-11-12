@@ -389,6 +389,15 @@ MachineLearning_Assignment/
 - [Link notebook Phần mở rộng](https://colab.research.google.com/github/HoangHungLN/MachineLearning_Assignment/blob/main/Extended_Assignment/notebooks/Extended_Assignment.ipynb)
 ---
 
+## Phân chia công việc
+| **Thành viên**            | **Assignment 1**   | **Assignment 2**         | **Assignment 3**         | **Extended Assignment**                     | **Hoàn thành** |
+| ------------------------- | ------------------ | ------------------------ | ------------------------ | ------------------------------------------- | -------------- |
+| **Trương Thiên Ân**       | Tiền xử lý dữ liệu | Trích xuất đặc trưng     | Chạy và đánh giá mô hình | Hiện thực & đánh giá giải thuật **Viterbi** | 100%           |
+| **Lại Nguyễn Hoàng Hưng** | Chạy mô hình       | Chạy và đánh giá mô hình | Tiền xử lý dữ liệu       | Hiện thực & đánh giá giải thuật **Forward** | 100%           |
+| **Nguyễn Tô Quốc Việt**   | Đánh giá mô hình   | Tiền xử lý dữ liệu       | Trích xuất đặc trưng     | Xử lý dữ liệu                               | 100%           |
+
+## Hoạt động nhóm: **[Các buổi họp](https://drive.google.com/drive/u/0/folders/13KqSeGFiZFktANKcmTRcsFp95Zxn7GKI)**
+
 ## Liên hệ
 Nếu có thắc mắc, vui lòng liên hệ:  
 - **Trương Thiên Ân** – an.truong241105@hcmut.edu.vn  
