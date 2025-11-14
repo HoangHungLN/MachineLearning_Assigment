@@ -390,11 +390,12 @@ MachineLearning_Assignment/
 ---
 
 ## Phân chia công việc
-| **Thành viên**            | **Assignment 1**   | **Assignment 2**         | **Assignment 3**         | **Extended Assignment**                     | **Hoàn thành** |
-| ------------------------- | ------------------ | ------------------------ | ------------------------ | ------------------------------------------- | -------------- |
-| **Trương Thiên Ân**       | Tiền xử lý dữ liệu | Trích xuất đặc trưng     | Chạy và đánh giá mô hình | Hiện thực & đánh giá giải thuật **Viterbi** | 100%           |
-| **Lại Nguyễn Hoàng Hưng** | Chạy mô hình       | Chạy và đánh giá mô hình | Tiền xử lý dữ liệu       | Hiện thực & đánh giá giải thuật **Forward** | 100%           |
-| **Nguyễn Tô Quốc Việt**   | Đánh giá mô hình   | Tiền xử lý dữ liệu       | Trích xuất đặc trưng     | Xử lý dữ liệu                               | 100%           |
+| **Thành viên**            | **Assignment 1**                  | **Assignment 2**               | **Assignment 3**               | **Extended Assignment**                     | **Hoàn thành** |
+| ------------------------- | --------------------------------- | ------------------------------ | ------------------------------ | ------------------------------------------- | -------------- |
+| **Trương Thiên Ân**       | EDA, tiền xử lý dữ liệu           | Trích xuất đặc trưng           | Huấn luyện và đánh giá mô hình | Hiện thực & đánh giá giải thuật **Viterbi** | 100%           |
+| **Lại Nguyễn Hoàng Hưng** | Giảm số chiều, huấn luyện mô hình | Huấn luyện và đánh giá mô hình | EDA, tiền xử lý dữ liệu        | Hiện thực & đánh giá giải thuật **Forward** | 100%           |
+| **Nguyễn Tô Quốc Việt**   | Đánh giá mô hình, báo cáo         | EDA, tiền xử lý dữ liệu        | Trích xuất đặc trưng           | Xử lý dữ liệu, huấn luyện tham số           | 100%           |
+
 
 ## Hoạt động nhóm: **[Các buổi họp](https://drive.google.com/drive/u/0/folders/13KqSeGFiZFktANKcmTRcsFp95Zxn7GKI)**
 
